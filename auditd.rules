@@ -1,0 +1,59 @@
+## First rule - delete all
+-D
+
+## Increase the buffers to survive stress events.
+## Make this bigger for busy systems
+-b 8192
+
+## This determine how long to wait in burst of events
+--backlog_wait_time 60000
+
+## Set failure mode to syslog
+-f 1
+
+
+###RULES###
+-w /etc/passwd -p wa -k passwd_changes
+-w /usr/bin/pip -p x -k third_party_software_mgmt
+
+
+## Cron configuration & scheduled jobs
+-w /etc/cron.allow -p rxwa -k cron_allow
+-w /etc/cron.deny -p rxwa -k cron_deny
+-w /etc/cron.d/ -p rxwa -k cron_d
+-w /etc/cron.daily/ -p wa -k cron_daily
+-w /etc/cron.hourly/ -p wa -k cron_hourly
+-w /etc/cron.monthly/ -p wa -k cron_monthly
+-w /etc/cron.weekly/ -p wa -k cron
+-w /etc/crontab -p wa -k cron
+-w /var/spool/cron/ -p wa -k cron
+
+### Local time zone
+-w /etc/localtime -p wa -k localtime
+
+## Common Shells
+-w /bin/bash -p x -k susp_shell_bash
+-w /bin/dash -p x -k susp_shell_dash
+-w /bin/busybox -p x -k susp_shell_busybox
+-w /bin/zsh -p x -k susp_shell_zsh
+-w /bin/sh -p x -k susp_shell_sh
+-w /bin/ksh -p x -k susp_shell_ksh
+
+
+###NEVER EXECUTE####
+-a never,exclude -F msgtype=USER_END
+-a never,exclude -F msgtype=USER_START
+-a never,exclude -F msgtype=LOGIN
+-a never,exclude -F msgtype=CRED_DISP
+-a never,exclude -F msgtype=USER_ACCT
+-a never,exclude -F msgtype=SERVICE_START
+-a never,exclude -F msgtype=SERVICE_STOP
+-a never,exclude -F msgtype=CRED_ACQ
+-a never,exclude -F msgtype=USER_AUTH
+-a never,exclude -F msgtype=CRED_REFR
+-a never,exclude -F msgtype=CONFIG_CHANGE
+-a never,exclude -F msgtype=SOCKADDR
+
+## Process ID change (switching accounts) applications
+-w /bin/su -p x -k priv_esc
+-w /usr/bin/sudo -p x -k priv_esc
